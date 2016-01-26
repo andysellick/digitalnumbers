@@ -1,2 +1,3 @@
 # digitalnumbers
-Plugin to generate old school digital numbers
+Plugin to generate old school digital numbers - still in development
+
