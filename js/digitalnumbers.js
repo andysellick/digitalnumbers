@@ -20,7 +20,7 @@
 				increment: 1,
 				speed: 500,
 				direction: 1, //either 1 to increase or -1 to decrease
-				mode: 'scale', //can be scale, scaleloop
+				mode: 'scale', //can be scale, scaleloop, clock
 			}, this.defaults, this.options);
 
 			var functions = {
@@ -28,6 +28,7 @@
 					//begin
 					init: function(){
 						if(obj.settings.mode === 'clock'){
+							obj.$elem.addClass('clock');
 							obj.numLen = 6;
 							obj.numCurr = functions.utility.getCurrentTime();
 							functions.markup.createDigits();
@@ -37,7 +38,7 @@
 							obj.numLen = functions.utility.getNumberStrLen(obj.settings.numMax);
 							obj.numCurr = obj.settings.startat;
 							functions.markup.createDigits();
-							
+
 							if(obj.settings.mode === 'scaleloop'){
 								obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.speed);
 							}
