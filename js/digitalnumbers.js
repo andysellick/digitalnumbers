@@ -27,16 +27,23 @@
                 general: {
 					//begin
 					init: function(){
-						obj.numLen = functions.utility.getNumberStrLen(obj.settings.numMax);
-						obj.numCurr = obj.settings.startat;
-						functions.markup.createDigits();
-						if(obj.settings.mode === 'scaleloop'){
-							obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.speed);
+						if(obj.settings.mode === 'clock'){
+							obj.numLen = 6;
+							obj.numCurr = functions.utility.getCurrentTime();
+							functions.markup.createDigits();
+							obj.timer = setTimeout(functions.general.clock,500);
 						}
-						else if(obj.settings.mode === 'scale'){
-							obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.speed);
-						}
-						else if(obj.settings.mode === 'countdown'){
+						else {
+							obj.numLen = functions.utility.getNumberStrLen(obj.settings.numMax);
+							obj.numCurr = obj.settings.startat;
+							functions.markup.createDigits();
+							
+							if(obj.settings.mode === 'scaleloop'){
+								obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.speed);
+							}
+							else if(obj.settings.mode === 'scale'){
+								obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.speed);
+							}
 						}
 					},
 					//do initial settings setup and prevent settings abuse, e.g. prevent numbers below zero
@@ -64,6 +71,13 @@
 						}
 					},
 
+					//show a clock
+					clock: function(){
+						obj.numCurr = functions.utility.getCurrentTime();
+						functions.markup.updateDigits();
+						obj.timer = setTimeout(functions.general.clock,500);
+					},
+
 					//change a number until it hits the min/max, then loop
                     scaleNumberLoop: function(){
 						obj.numCurr += obj.settings.direction;
@@ -81,6 +95,14 @@
                     },
                 },
                 utility: {
+					//get the current time as a single number, e.g. 010203 (3 seconds past 2 minutes past 1)
+					getCurrentTime: function(){
+						var d = new Date();
+						var h = functions.utility.padDigits(d.getHours(),2);
+						var m = functions.utility.padDigits(d.getMinutes(),2);
+						var s = functions.utility.padDigits(d.getSeconds(),2);
+						return(parseInt("" + h + m + s));
+					},
 					//get the number of digits in a number
 					getNumberStrLen: function(num){
 						var len = '' + num;
