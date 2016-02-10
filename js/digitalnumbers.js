@@ -1,5 +1,4 @@
-/*
-*/
+/* https://github.com/andysellick/digitalnumbers */
 (function (window,$) {
 	var Plugin = function(elem,options){
 		this.elem = elem;
@@ -11,7 +10,6 @@
 		init: function(){
 			var obj = this;
 			obj.timer = 0;
-			obj.direction = 1;
 			obj.numCurr = 0;
 			obj.numLen = 0;
 
@@ -21,41 +19,62 @@
 				startat: 0,
 				increment: 1,
 				speed: 500,
-				mode: 'scale', //can be scale, random
+				direction: 1, //either 1 to increase or -1 to decrease
+				mode: 'scale', //can be scale, scaleloop
 			}, this.defaults, this.options);
 
 			var functions = {
                 general: {
+					//begin
 					init: function(){
 						obj.numLen = functions.utility.getNumberStrLen(obj.settings.numMax);
 						obj.numCurr = obj.settings.startat;
 						functions.markup.createDigits();
-						if(obj.settings.mode === 'scale'){
-							obj.timer = setTimeout(functions.general.changeNumber,obj.settings.speed);
+						if(obj.settings.mode === 'scaleloop'){
+							obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.speed);
 						}
-						else if(obj.settings.mode === 'randomscale'){
+						else if(obj.settings.mode === 'scale'){
+							obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.speed);
+						}
+						else if(obj.settings.mode === 'countdown'){
 						}
 					},
-					//do initial settings setup and prevent settings abuse
+					//do initial settings setup and prevent settings abuse, e.g. prevent numbers below zero
                     overrideSettings: function(){
-						//quick check to prevent numbers below zero
 						obj.settings.numMin = Math.max(obj.settings.numMin,0);
 						obj.settings.numMax = Math.max(obj.settings.numMax,0);
 						obj.settings.numCurr = Math.max(obj.settings.numCurr,0);
 						obj.settings.increment = Math.min(obj.settings.increment,1);
+						obj.settings.startat = Math.max(0,Math.min(obj.settings.startat,obj.settings.numMax));
                     },
 
-                    changeNumber: function(){
-						obj.numCurr += obj.direction;
+					//scale a number until it reaches the min/max, then stop
+                    scaleNumber: function(){
+						obj.numCurr += obj.settings.direction;
+						functions.markup.updateDigits();
+						if(obj.settings.direction === 1){
+							if(obj.numCurr < obj.settings.numMax){
+								obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.speed);
+							}
+						}
+						else {
+							if(obj.numCurr > obj.settings.numMin){
+								obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.speed);
+							}
+						}
+					},
+
+					//change a number until it hits the min/max, then loop
+                    scaleNumberLoop: function(){
+						obj.numCurr += obj.settings.direction;
 						if(obj.numCurr === obj.settings.numMax){
-							obj.direction = -1;
+							obj.settings.direction = -1;
 						}
 						else if(obj.numCurr === obj.settings.numMin){
-							obj.direction = 1;
+							obj.settings.direction = 1;
 						}
 						functions.markup.updateDigits();
-						//console.log(obj.numCurr);
-						obj.timer = setTimeout(functions.general.changeNumber,obj.settings.speed);
+						obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.speed);
 					},
 
                     resizeWindow: function(){
