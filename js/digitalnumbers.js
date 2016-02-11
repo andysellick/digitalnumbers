@@ -54,6 +54,12 @@
 						obj.settings.numCurr = Math.max(obj.settings.numCurr,0);
 						obj.settings.increment = Math.min(obj.settings.increment,1);
 						obj.settings.startat = Math.max(0,Math.min(obj.settings.startat,obj.settings.numMax));
+						if(obj.settings.direction < 0){
+							obj.settings.direction = -1;
+						}
+						else {
+							obj.settings.direction = 1;
+						}
                     },
 
 					//scale a number until it reaches the min/max, then stop
