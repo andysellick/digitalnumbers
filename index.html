@@ -14,12 +14,22 @@
     		display:inline-block;
     		padding-top:50px;
     	}
+    	.digitalnumbers {
+    		margin-bottom:50px;
+    	}
+    	.digitalnumbers:after {
+   			content:"";
+   			display:block;
+   			clear:both;
+   			height:0;
+    	}
     </style>
 </head>
 
 <body>
 	<div class="page">
 		<div id="digitwrapper" class="digitalnumbers"></div>
+		<div id="digitwrapper2" class="digitalnumbers"></div>
 	</div>
 
     <script src="js/vendor/jquery.min.js"></script>
@@ -31,6 +41,16 @@
 				mode: 'clock',
 				speed: 200,
 				delay: 5000,
+				direction: -1
+			});
+
+			$('#digitwrapper2').digitalnumbers({
+				startat: 15,
+				mode: 'scaleloop',
+				numMax: 5000,
+				numMin: 0,
+				speed: 200,
+				delay: 1000,
 				direction: -1
 			});
     	});
