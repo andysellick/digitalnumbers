@@ -18,6 +18,7 @@
 				numMin: 0,
 				startat: 0,
 				increment: 1,
+				delay: 500, //delay between the plugin loading and any changes beginning
 				speed: 500,
 				direction: 1, //either 1 to increase or -1 to decrease
 				mode: 'scale', //can be scale, scaleloop, clock
@@ -40,10 +41,10 @@
 							functions.markup.createDigits();
 
 							if(obj.settings.mode === 'scaleloop'){
-								obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.speed);
+								obj.timer = setTimeout(functions.general.scaleNumberLoop,obj.settings.delay);
 							}
 							else if(obj.settings.mode === 'scale'){
-								obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.speed);
+								obj.timer = setTimeout(functions.general.scaleNumber,obj.settings.delay);
 							}
 						}
 					},
