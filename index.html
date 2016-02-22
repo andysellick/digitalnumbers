@@ -30,10 +30,14 @@
 	<div class="page">
 		<div id="digitwrapper" class="digitalnumbers"></div>
 		<div id="digitwrapper2" class="digitalnumbers"></div>
+		<div id="digitwrapper3" class="digitalnumbers"></div>
 	</div>
 
     <script src="js/vendor/jquery.min.js"></script>
+	<script src="js/vendor/moment.min.js"></script>
+    <script src="js/vendor/readable-range.js"></script>
     <script src="js/digitalnumbers.js"></script>
+
     <script>
     	$(document).ready(function(){
 			$('#digitwrapper').digitalnumbers({
@@ -47,11 +51,16 @@
 			$('#digitwrapper2').digitalnumbers({
 				startat: 15,
 				mode: 'scaleloop',
-				numMax: 5000,
+				numMax: 100,
 				numMin: 0,
 				speed: 200,
 				delay: 1000,
 				direction: -1
+			});
+
+			$('#digitwrapper3').digitalnumbers({
+				mode: 'countdown',
+				dateTarget: [2000,1,1,0,0,0]
 			});
     	});
     </script>

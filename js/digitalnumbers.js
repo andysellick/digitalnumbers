@@ -1,4 +1,9 @@
 /* https://github.com/andysellick/digitalnumbers */
+
+//timestamp shim for cross browser compatibility
+if(!Date.now){
+    Date.now = function() { return new Date().getTime(); }
+}
 (function (window,$) {
 	var Plugin = function(elem,options){
 		this.elem = elem;
@@ -12,28 +17,40 @@
 			obj.timer = 0;
 			obj.numCurr = 0;
 			obj.numLen = 0;
+			obj.dateorder = ['year','month','day','hour','minute','second']; //used to keep track of the order in which to display these things
 
 			this.settings = $.extend({
 				numMax: 100,
 				numMin: 0,
 				startat: 0,
 				increment: 1,
+				dateTarget: [2020,2,23,14,25,0],
 				delay: 500, //delay between the plugin loading and any changes beginning
 				speed: 500,
 				direction: 1, //either 1 to increase or -1 to decrease
-				mode: 'scale', //can be scale, scaleloop, clock
+				mode: 'scale', //can be scale, scaleloop, clock, countdown
 			}, this.defaults, this.options);
 
 			var functions = {
                 general: {
 					//begin
 					init: function(){
+						//we want to show the digits as they should be on load for clock and countdown
 						if(obj.settings.mode === 'clock'){
 							obj.$elem.addClass('clock');
 							obj.numLen = 6;
 							obj.numCurr = functions.utility.getCurrentTime();
 							functions.markup.createDigits();
 							obj.timer = setTimeout(functions.general.clock,500);
+						}
+						else if(obj.settings.mode === 'countdown'){
+							obj.$elem.addClass('clock');
+							obj.targ = obj.settings.dateTarget; //fixme need to do sanity check on this value
+							obj.targ = new Date(obj.targ[0],obj.targ[1] - 1,obj.targ[2],obj.targ[3],obj.targ[4],obj.targ[5]);
+							obj.timeobj = {'year':'00','month':'00','day':'00','hour':'00','minute':'00','second':'00'};
+							obj.numLen = Object.keys(obj.timeobj).length * 2;
+							functions.markup.createDigits();
+							functions.general.countDown();
 						}
 						else {
 							obj.numLen = functions.utility.getNumberStrLen(obj.settings.numMax);
@@ -61,7 +78,43 @@
 						else {
 							obj.settings.direction = 1;
 						}
+						//only do this sanity check if certain options are chosen
+						if(obj.settings.mode === 'countdown'){
+							var resetto = [2016,2,23,14,25,0];
+							if(obj.settings.dateTarget.length !== 6){
+								obj.settings.dateTarget = resetto;
+							}
+						}
                     },
+
+					//given a target date, now calculate and output the time remaining before that date
+					//also works as a countup, if target date is in the past
+                    countDown: function(){
+						obj.now = new Date();
+						var diff = moment.preciseDiff(obj.now,obj.targ); //moment returns a formatted string e.g. '1 day 4 hours 19 minutes 3 seconds'
+						diff = diff.split(' ');
+						obj.timeobj = {'year':'00','month':'00','day':'00','hour':'00','minute':'00','second':'00'}; //reset the stored time
+
+						//loop through the output from moment, trim the 's' from the unit names, and insert accordingly into the timeobj
+						for(var i = 0; i < diff.length; i += 2){
+							var num = diff[i];
+							var unit = diff[i + 1];
+							if(unit[unit.length - 1] == 's'){ //moment's output can vary e.g. 'seconds' or 'second', to match the array keys in time we need to trim this
+								unit = unit.substring(0, unit.length - 1);
+							}
+							obj.timeobj[unit] = num; //this only happens if moment returns a value for this digit type, which it doesn't do if it's 0
+						}
+
+						//now output the time
+						var tmp = '';
+						for(var d in obj.dateorder){
+							var d = obj.dateorder[d];
+							tmp += functions.utility.padDigits(obj.timeobj[d],2); //pad the digits and then add to the tmp string
+						}
+						obj.numCurr = parseInt(tmp);
+						functions.markup.updateDigits();
+						obj.timer = setTimeout(functions.general.countDown,100); //called more than once every second but can't guarantee it'll only take 1 second, so updating quicker is better
+					},
 
 					//scale a number until it reaches the min/max, then stop
                     scaleNumber: function(){
