@@ -74,3 +74,5 @@ Note that the units are not displayed. Relevant options are:
 
 - dateTarget
 
+Demo at http://www.custarddoughnuts.co.uk/article/2016/3/18/jquery-digital-numbers-plugin
+
